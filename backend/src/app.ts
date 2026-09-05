@@ -13,8 +13,13 @@ import type { LlmProvider } from './services/llm-provider.js';
 export const createApp = (provider: LlmProvider = new LlamaCppProvider()): express.Express => {
   const app = express();
   app.disable('x-powered-by');
+  app.disable('etag');
   app.use(helmet({ contentSecurityPolicy: false }));
   app.use(requestContext);
+  app.use('/api', (_request, response, next) => {
+    response.setHeader('Cache-Control', 'no-store');
+    next();
+  });
   app.use(express.json({ limit: config.maxRequestBytes }));
   app.use('/api/auth', createAuthRouter());
   app.use('/api/chat', requireAuth, createChatRouter(provider));

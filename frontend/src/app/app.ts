@@ -67,7 +67,10 @@ export class App implements OnInit, OnDestroy {
 
   async logout():Promise<void>{this.stop();await this.auth.logout();this.health.stop();this.conversations.reset()}
 
-  private async loadUserData():Promise<void>{await Promise.all([this.conversations.initialize(),this.settings.initialize()]);this.health.start()}
+  private async loadUserData():Promise<void>{
+    this.health.start();
+    await Promise.all([this.conversations.initialize(),this.settings.initialize()]);
+  }
 
   private async generate(): Promise<void> {
     const conversation = this.conversations.activeConversation();
