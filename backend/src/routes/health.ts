@@ -16,7 +16,7 @@ export const createHealthRouter = (provider: LlmProvider): Router => {
       response.json({
         api: 'ok',
         llama: health.available ? 'ok' : 'unavailable',
-        model: health.model,
+        model: config.modelDisplayName || health.model,
         localInference: config.isLocalInference,
       });
     } catch {
@@ -24,7 +24,7 @@ export const createHealthRouter = (provider: LlmProvider): Router => {
       response.status(status).json({
         api: 'ok',
         llama: 'unavailable',
-        model: config.llamaModel,
+        model: config.modelDisplayName || config.llamaModel,
         localInference: config.isLocalInference,
       });
     } finally {

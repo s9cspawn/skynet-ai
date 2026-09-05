@@ -1,10 +1,10 @@
 <article class="message" [class.user]="message().role === 'user'" [class.error]="message().error">
-  <div class="avatar" [attr.aria-label]="message().role === 'user' ? 'You' : 'Local AI'">
+  <div class="avatar" [attr.aria-label]="message().role === 'user' ? 'You' : 'Skynet'">
     @if (message().role === 'user') { Y } @else { <span aria-hidden="true">✦</span> }
   </div>
   <div class="message-body">
     <div class="message-meta">
-      <strong>{{ message().role === 'user' ? 'You' : 'Local AI' }}</strong>
+      <strong>{{ message().role === 'user' ? 'You' : 'Skynet' }}</strong>
       <time>{{ time() }}</time>
       @if (message().error) { <span class="error-label">Error</span> }
     </div>

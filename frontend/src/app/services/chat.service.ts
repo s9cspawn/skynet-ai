@@ -33,7 +33,7 @@ export class ChatService {
 
     if (!response.ok) {
       const body = await response.json().catch(() => null) as { error?: string } | null;
-      throw new ChatStreamError(body?.error ?? `The local AI request failed (${response.status}).`);
+      throw new ChatStreamError(body?.error ?? `The Skynet request failed (${response.status}).`);
     }
     if (!response.body) throw new ChatStreamError('The browser could not read the model stream.');
 

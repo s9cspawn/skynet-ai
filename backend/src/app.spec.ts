@@ -15,7 +15,7 @@ class FakeProvider implements LlmProvider {
   }
 }
 
-describe('local AI API', () => {
+describe('Skynet API', () => {
   const app = createApp(new FakeProvider());
 
   it('rejects unsupported chat roles', async () => {
@@ -35,6 +35,6 @@ describe('local AI API', () => {
   it('reports provider health', async () => {
     const response = await request(app).get('/api/health');
     expect(response.status).toBe(200);
-    expect(response.body).toMatchObject({ api: 'ok', llama: 'ok', model: 'test-model' });
+    expect(response.body).toMatchObject({ api: 'ok', llama: 'ok', model: 'Skynet-12B' });
   });
 });

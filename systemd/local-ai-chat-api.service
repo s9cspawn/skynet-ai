@@ -1,5 +1,5 @@
 [Unit]
-Description=Local AI Chat API
+Description=Skynet Chat API
 After=network.target llama-server.service
 
 [Service]

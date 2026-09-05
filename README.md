@@ -1,6 +1,6 @@
-# Local AI Chat
+# Skynet
 
-A private Angular chat interface for a local `llama.cpp` model. Nginx is the only browser-facing service; it serves the Angular build and proxies `/api` to an Express API bound to localhost. The API validates requests, discovers the loaded model, and streams the OpenAI-compatible llama.cpp response without buffering it.
+A private Angular chat interface for a local `llama.cpp` model. Nginx is the only browser-facing service; it serves the Angular build and proxies `/api` to an Express API bound to localhost. The API validates requests, discovers the loaded model, and streams the OpenAI-compatible llama.cpp response without buffering it. The interface presents the loaded model as **Skynet-12B** while retaining its actual llama.cpp identifier for inference requests.
 
 ```text
 Windows browser
@@ -80,6 +80,7 @@ The defaults are:
 ```dotenv
 LLAMA_BASE_URL=http://127.0.0.1:8080
 LLAMA_MODEL=gemma4-12b
+MODEL_DISPLAY_NAME=Skynet-12B
 API_HOST=127.0.0.1
 API_PORT=3000
 LLAMA_TIMEOUT_MS=600000

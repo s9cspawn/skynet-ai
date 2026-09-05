@@ -83,7 +83,7 @@ export const createChatRouter = (provider: LlmProvider): Router => {
         response.status(wasCancelled ? 499 : 502).json({
           error: wasCancelled
             ? 'Generation cancelled.'
-            : 'Unable to contact the local AI model. Check that llama-server is running on 127.0.0.1:8080.',
+            : 'Unable to contact Skynet. Check that llama-server is running on 127.0.0.1:8080.',
           requestId,
         });
       } else if (!response.writableEnded) {

@@ -70,7 +70,7 @@ export class App implements OnInit, OnDestroy {
       if (controller.signal.aborted) {
         if (!this.findMessage(assistant.id)?.content) this.conversations.updateMessage(assistant.id, { content: '*Generation stopped.*' });
       } else {
-        const message = error instanceof ChatStreamError ? error.message : 'Unable to contact the local AI model. Check that llama-server is running on 127.0.0.1:8080.';
+        const message = error instanceof ChatStreamError ? error.message : 'Unable to contact Skynet. Check that llama-server is running on 127.0.0.1:8080.';
         this.conversations.updateMessage(assistant.id, { content: message, error: true });
       }
     } finally {

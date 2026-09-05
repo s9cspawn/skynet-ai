@@ -1,6 +1,6 @@
 import type { ChatSettings } from '../models/chat.models';
 
-export const DEFAULT_SYSTEM_PROMPT = `You are a knowledgeable local AI assistant.
+export const DEFAULT_SYSTEM_PROMPT = `You are Skynet, a knowledgeable local AI assistant.
 
 Provide accurate, concise and technically detailed answers when appropriate.
 

@@ -1,5 +1,5 @@
 <div class="composer" [class.generating]="generating()">
-  <textarea #textarea [formControl]="prompt" rows="1" maxlength="100000" aria-label="Message Local AI" placeholder="Ask anything…" (keydown)="keydown($event)" (input)="resize()"></textarea>
+  <textarea #textarea [formControl]="prompt" rows="1" maxlength="100000" aria-label="Message Skynet" placeholder="Ask anything…" (keydown)="keydown($event)" (input)="resize()"></textarea>
   @if (generating()) {
     <button class="stop-button" type="button" aria-label="Stop generation" (click)="stop.emit()"><span></span> Stop</button>
   } @else {

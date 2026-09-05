@@ -1,6 +1,6 @@
 <div class="settings-scrim" (click)="close.emit()"></div>
 <section class="settings-panel" role="dialog" aria-modal="true" aria-labelledby="settings-title">
-  <header><div><span class="kicker">Local AI</span><h2 id="settings-title">Settings</h2></div><button type="button" aria-label="Close settings" (click)="close.emit()">×</button></header>
+  <header><div><span class="kicker">Skynet</span><h2 id="settings-title">Settings</h2></div><button type="button" aria-label="Close settings" (click)="close.emit()">×</button></header>
   <form [formGroup]="form" (ngSubmit)="submit()">
     <label for="system-prompt">System prompt</label>
     <p>Sets the model's behavior at the start of every request.</p>
