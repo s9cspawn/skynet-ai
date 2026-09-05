@@ -1,7 +1,13 @@
+@if (auth.loading()) {
+  <div class="auth-loading"><div class="loading-mark">✦</div><span>Waking Skynet…</span></div>
+} @else if (!auth.user()) {
+  <app-auth #authForm (submitAuth)="authenticate($event, authForm)" />
+} @else {
 <div class="app-shell">
   <app-sidebar [conversations]="conversations.conversations()" [activeId]="conversations.activeId()" [open]="sidebarOpen()"
     (newChat)="newConversation()" (selectChat)="selectConversation($event)" (deleteChat)="deleteConversation($event)"
-    (openSettings)="settingsOpen.set(true)" (closeSidebar)="sidebarOpen.set(false)" />
+    (openSettings)="settingsOpen.set(true)" (closeSidebar)="sidebarOpen.set(false)"
+    (logout)="logout()" [user]="auth.user()" />
   <main>
     <header class="topbar">
       <button class="menu-button" type="button" aria-label="Open conversations" (click)="sidebarOpen.set(true)">☰</button>
@@ -19,3 +25,4 @@
   </main>
 </div>
 @if (settingsOpen()) { <app-settings [settings]="settings.settings()" (save)="saveSettings($event)" (reset)="resetSettings()" (close)="settingsOpen.set(false)" /> }
+}

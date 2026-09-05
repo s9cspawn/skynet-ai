@@ -25,6 +25,8 @@ Nginx :80
 - Browser cancellation that aborts the upstream llama.cpp request
 - Markdown with sanitized HTML, tables, code blocks, and copy controls
 - Local conversation history, automatic titles, and persisted settings
+- Local user accounts with salted password hashes and HTTP-only sessions
+- Per-user conversations and settings stored in SQLite
 - Model health and discovery through `/health`, `/v1/health`, and `/v1/models`
 - Responsive dark interface with mobile conversation navigation
 - Request validation, size limits, security headers, request IDs, and metadata-only logs
@@ -85,7 +87,10 @@ API_HOST=127.0.0.1
 API_PORT=3000
 LLAMA_TIMEOUT_MS=600000
 MAX_REQUEST_BYTES=262144
+SESSION_DAYS=30
 ```
+
+Development creates SQLite at `backend/data/skynet.db`. The systemd service stores production data at `/var/lib/skynet/skynet.db`, where its `StateDirectory` grants the API write access.
 
 `LLAMA_MODEL` is a fallback. When llama.cpp exposes `/v1/models`, the health response reports its actual model identifier. Keep `LLAMA_BASE_URL` in server configuration; the browser cannot supply an upstream URL.
 

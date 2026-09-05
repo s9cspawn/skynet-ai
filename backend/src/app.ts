@@ -4,6 +4,9 @@ import { config } from './config.js';
 import { requestContext } from './middleware/request-context.js';
 import { createChatRouter } from './routes/chat.js';
 import { createHealthRouter } from './routes/health.js';
+import { createAuthRouter } from './routes/auth.js';
+import { createUserDataRouter } from './routes/user-data.js';
+import { requireAuth } from './middleware/auth.js';
 import { LlamaCppProvider } from './services/llama-cpp.provider.js';
 import type { LlmProvider } from './services/llm-provider.js';
 
@@ -13,8 +16,10 @@ export const createApp = (provider: LlmProvider = new LlamaCppProvider()): expre
   app.use(helmet({ contentSecurityPolicy: false }));
   app.use(requestContext);
   app.use(express.json({ limit: config.maxRequestBytes }));
-  app.use('/api/chat', createChatRouter(provider));
+  app.use('/api/auth', createAuthRouter());
+  app.use('/api/chat', requireAuth, createChatRouter(provider));
   app.use('/api/health', createHealthRouter(provider));
+  app.use('/api', createUserDataRouter());
   app.use((_request, response) => response.status(404).json({ error: 'Not found.' }));
   app.use((error: unknown, _request: Request, response: Response, _next: NextFunction) => {
     if (response.headersSent) return;

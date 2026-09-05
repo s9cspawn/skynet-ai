@@ -1,134 +1,48 @@
-import { computed, inject, Injectable, signal } from '@angular/core';
+import { computed, Injectable, signal } from '@angular/core';
 import type { ChatMessage, Conversation } from '../models/chat.models';
-import { ConversationStorage, LocalStorageConversationStorage } from './conversation-storage';
 
 const createId = (): string => crypto.randomUUID();
-
 const deriveTitle = (message: string): string => {
-  const words = message
-    .replace(/[`*_#>\[\]{}()]/g, ' ')
-    .replace(/[^\p{L}\p{N}'-]+/gu, ' ')
-    .trim()
-    .split(/\s+/)
-    .filter(Boolean);
-  const ignored = new Set(['a', 'an', 'the', 'to', 'me', 'please', 'can', 'you', 'could', 'would', 'about']);
-  const useful = words.filter((word, index) => index === 0 || !ignored.has(word.toLowerCase())).slice(0, 5);
-  const titleWords = (useful.length >= 3 ? useful : words).slice(0, 6);
-  const title = titleWords.join(' ');
-  return title ? title.charAt(0).toUpperCase() + title.slice(1) : 'New conversation';
+  const words = message.replace(/[`*_#>\[\]{}()]/g,' ').replace(/[^\p{L}\p{N}'-]+/gu,' ').trim().split(/\s+/).filter(Boolean);
+  const ignored = new Set(['a','an','the','to','me','please','can','you','could','would','about']);
+  const useful = words.filter((word,index)=>index===0||!ignored.has(word.toLowerCase())).slice(0,5);
+  const title = (useful.length>=3?useful:words).slice(0,6).join(' ');
+  return title ? title.charAt(0).toUpperCase()+title.slice(1) : 'New conversation';
 };
 
-@Injectable({ providedIn: 'root' })
+interface StoredConversation extends Omit<Conversation,'createdAt'|'updatedAt'|'messages'> { createdAt:string; updatedAt:string; messages:Array<Omit<ChatMessage,'createdAt'>&{createdAt:string}>; }
+
+@Injectable({ providedIn:'root' })
 export class ConversationService {
-  private readonly storage: ConversationStorage = inject(LocalStorageConversationStorage);
-  readonly conversations = signal<Conversation[]>(this.storage.load());
-  readonly activeId = signal<string | null>(this.conversations()[0]?.id ?? null);
-  readonly activeConversation = computed(() =>
-    this.conversations().find((conversation) => conversation.id === this.activeId()) ?? null,
-  );
+  readonly conversations=signal<Conversation[]>([]);
+  readonly activeId=signal<string|null>(null);
+  readonly activeConversation=computed(()=>this.conversations().find(c=>c.id===this.activeId())??null);
 
-  constructor() {
-    if (this.conversations().length === 0) this.create();
+  async initialize():Promise<void>{
+    const response=await fetch('/api/conversations');
+    if(!response.ok) throw new Error('Unable to load conversations.');
+    const body=await response.json() as {conversations:StoredConversation[]};
+    let items=body.conversations.map(c=>({...c,createdAt:new Date(c.createdAt),updatedAt:new Date(c.updatedAt),messages:c.messages.map(m=>({...m,createdAt:new Date(m.createdAt)}))}));
+    if(items.length===0) items=await this.migrateLegacy();
+    this.conversations.set(items);
+    this.activeId.set(items[0]?.id??null);
+    if(items.length===0) this.create();
   }
 
-  create(): string {
-    const now = new Date();
-    const conversation: Conversation = {
-      id: createId(),
-      title: 'New conversation',
-      messages: [],
-      createdAt: now,
-      updatedAt: now,
-    };
-    this.conversations.update((items) => [conversation, ...items]);
-    this.activeId.set(conversation.id);
-    this.persist();
-    return conversation.id;
-  }
+  reset():void{this.conversations.set([]);this.activeId.set(null)}
+  create():string{const now=new Date();const item:Conversation={id:createId(),title:'New conversation',messages:[],createdAt:now,updatedAt:now};this.conversations.update(v=>[item,...v]);this.activeId.set(item.id);void this.persistOne(item);return item.id}
+  select(id:string):void{if(this.conversations().some(c=>c.id===id))this.activeId.set(id)}
+  delete(id:string):void{this.conversations.update(v=>v.filter(c=>c.id!==id));void fetch(`/api/conversations/${encodeURIComponent(id)}`,{method:'DELETE'});if(this.activeId()===id)this.activeId.set(this.conversations()[0]?.id??null);if(this.conversations().length===0)this.create()}
+  clearActive():void{const id=this.activeId();if(id)this.updateConversation(id,c=>({...c,title:'New conversation',messages:[]}))}
+  addMessage(message:Omit<ChatMessage,'id'|'createdAt'>):ChatMessage{const id=this.activeId()??this.create();const next={...message,id:createId(),createdAt:new Date()};this.updateConversation(id,c=>({...c,title:c.messages.some(m=>m.role==='user')||message.role!=='user'?c.title:deriveTitle(message.content),messages:[...c.messages,next]}));return next}
+  appendToMessage(messageId:string,chunk:string):void{const id=this.activeId();if(id)this.updateConversation(id,c=>({...c,messages:c.messages.map(m=>m.id===messageId?{...m,content:m.content+chunk}:m)}),false)}
+  updateMessage(messageId:string,patch:Partial<Pick<ChatMessage,'content'|'error'>>):void{const id=this.activeId();if(id)this.updateConversation(id,c=>({...c,messages:c.messages.map(m=>m.id===messageId?{...m,...patch}:m)}))}
+  truncateFromMessage(messageId:string):void{const id=this.activeId();if(id)this.updateConversation(id,c=>{const index=c.messages.findIndex(m=>m.id===messageId);return index<0?c:{...c,messages:c.messages.slice(0,index)}})}
+  persist():void{const active=this.activeConversation();if(active)void this.persistOne(active)}
 
-  select(id: string): void {
-    if (this.conversations().some((conversation) => conversation.id === id)) this.activeId.set(id);
-  }
-
-  delete(id: string): void {
-    this.conversations.update((items) => items.filter((conversation) => conversation.id !== id));
-    if (this.activeId() === id) this.activeId.set(this.conversations()[0]?.id ?? null);
-    if (this.conversations().length === 0) this.create();
-    this.persist();
-  }
-
-  clearActive(): void {
-    const id = this.activeId();
-    if (!id) return;
-    this.updateConversation(id, (conversation) => ({ ...conversation, title: 'New conversation', messages: [] }));
-  }
-
-  addMessage(message: Omit<ChatMessage, 'id' | 'createdAt'>): ChatMessage {
-    const conversationId = this.ensureActive();
-    const newMessage: ChatMessage = { ...message, id: createId(), createdAt: new Date() };
-    this.updateConversation(conversationId, (conversation) => ({
-      ...conversation,
-      title: conversation.messages.some((item) => item.role === 'user') || message.role !== 'user'
-        ? conversation.title
-        : deriveTitle(message.content),
-      messages: [...conversation.messages, newMessage],
-    }));
-    return newMessage;
-  }
-
-  appendToMessage(messageId: string, chunk: string): void {
-    const conversationId = this.activeId();
-    if (!conversationId) return;
-    this.updateConversation(conversationId, (conversation) => ({
-      ...conversation,
-      messages: conversation.messages.map((message) =>
-        message.id === messageId ? { ...message, content: message.content + chunk } : message,
-      ),
-    }), false);
-  }
-
-  updateMessage(messageId: string, patch: Partial<Pick<ChatMessage, 'content' | 'error'>>): void {
-    const conversationId = this.activeId();
-    if (!conversationId) return;
-    this.updateConversation(conversationId, (conversation) => ({
-      ...conversation,
-      messages: conversation.messages.map((message) => message.id === messageId ? { ...message, ...patch } : message),
-    }));
-  }
-
-  removeMessage(messageId: string): void {
-    const conversationId = this.activeId();
-    if (!conversationId) return;
-    this.updateConversation(conversationId, (conversation) => ({
-      ...conversation,
-      messages: conversation.messages.filter((message) => message.id !== messageId),
-    }));
-  }
-
-  truncateFromMessage(messageId: string): void {
-    const conversationId = this.activeId();
-    if (!conversationId) return;
-    this.updateConversation(conversationId, (conversation) => {
-      const index = conversation.messages.findIndex((message) => message.id === messageId);
-      return index < 0 ? conversation : { ...conversation, messages: conversation.messages.slice(0, index) };
-    });
-  }
-
-  persist(): void {
-    this.storage.save(this.conversations());
-  }
-
-  private ensureActive(): string {
-    return this.activeId() ?? this.create();
-  }
-
-  private updateConversation(id: string, update: (conversation: Conversation) => Conversation, persist = true): void {
-    this.conversations.update((items) => {
-      const next = items.map((conversation) =>
-        conversation.id === id ? { ...update(conversation), updatedAt: new Date() } : conversation,
-      );
-      return [...next].sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
-    });
-    if (persist) this.persist();
+  private updateConversation(id:string,update:(c:Conversation)=>Conversation,persist=true):void{let changed:Conversation|undefined;this.conversations.update(items=>items.map(c=>{if(c.id!==id)return c;changed={...update(c),updatedAt:new Date()};return changed}).sort((a,b)=>b.updatedAt.getTime()-a.updatedAt.getTime()));if(persist&&changed)void this.persistOne(changed)}
+  private async persistOne(item:Conversation):Promise<void>{await fetch(`/api/conversations/${encodeURIComponent(item.id)}`,{method:'PUT',headers:{'content-type':'application/json'},body:JSON.stringify(item)})}
+  private async migrateLegacy():Promise<Conversation[]>{
+    try{const raw=localStorage.getItem('local-ai.conversations.v1');if(!raw)return[];const stored=JSON.parse(raw) as StoredConversation[];const items=stored.map(c=>({...c,createdAt:new Date(c.createdAt),updatedAt:new Date(c.updatedAt),messages:c.messages.map(m=>({...m,createdAt:new Date(m.createdAt)}))}));await Promise.all(items.map(c=>this.persistOne(c)));localStorage.removeItem('local-ai.conversations.v1');return items}catch{return[]}
   }
 }

@@ -9,4 +9,5 @@ dist/
 frontend/.angular/
 frontend/dist/
 backend/dist/
+backend/data/
 coverage/

@@ -8,6 +8,7 @@ User=local-ai-chat
 Group=local-ai-chat
 WorkingDirectory=/opt/local-ai-chat/backend
 EnvironmentFile=-/etc/local-ai-chat/api.env
+Environment=DATABASE_PATH=/var/lib/skynet/skynet.db
 ExecStart=/usr/bin/node /opt/local-ai-chat/backend/dist/server.js
 Restart=on-failure
 RestartSec=3
@@ -15,6 +16,8 @@ NoNewPrivileges=true
 PrivateTmp=true
 ProtectSystem=strict
 ProtectHome=true
+StateDirectory=skynet
+ReadWritePaths=/var/lib/skynet
 
 [Install]
 WantedBy=multi-user.target

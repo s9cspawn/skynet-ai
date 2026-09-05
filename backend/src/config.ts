@@ -16,4 +16,6 @@ export const config = Object.freeze({
   llamaTimeoutMs: integer(process.env['LLAMA_TIMEOUT_MS'], 600_000),
   maxRequestBytes: integer(process.env['MAX_REQUEST_BYTES'], 262_144),
   isLocalInference: ['127.0.0.1', 'localhost', '::1'].includes(llamaBaseUrl.hostname),
+  databasePath: process.env['DATABASE_PATH'] ?? './data/skynet.db',
+  sessionDays: integer(process.env['SESSION_DAYS'], 30),
 });

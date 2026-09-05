@@ -1,4 +1,5 @@
 :host { display: block; height: 100dvh; }
+.auth-loading{height:100dvh;display:grid;place-content:center;justify-items:center;gap:.8rem;background:var(--bg);color:#788595;font-size:.78rem;letter-spacing:.08em}.loading-mark{color:var(--accent);font-size:2rem;animation:pulse 1.2s infinite}
 .app-shell { display: flex; height: 100dvh; background: var(--bg); color: var(--text); overflow: hidden; }
 main { min-width: 0; flex: 1; display: flex; flex-direction: column; position: relative; background: radial-gradient(circle at 52% -20%, rgba(67,163,150,.11), transparent 31rem), linear-gradient(rgba(255,255,255,.012) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.012) 1px, transparent 1px), var(--bg); background-size: auto, 3rem 3rem, 3rem 3rem, auto; }
 .topbar { height: 4.4rem; min-height: 4.4rem; display: flex; align-items: center; padding: 0 1.4rem; border-bottom: 1px solid var(--border); background: rgba(8,11,16,.75); backdrop-filter: blur(14px); z-index: 5; }

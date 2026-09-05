@@ -1,6 +1,7 @@
 import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import type { Conversation } from '../../models/chat.models';
+import type { User } from '../../models/chat.models';
 
 @Component({
   selector: 'app-sidebar',
@@ -19,6 +20,8 @@ export class Sidebar {
   readonly deleteChat = output<string>();
   readonly openSettings = output<void>();
   readonly closeSidebar = output<void>();
+  readonly user = input<User | null>(null);
+  readonly logout = output<void>();
 
   remove(event: Event, id: string): void {
     event.stopPropagation();

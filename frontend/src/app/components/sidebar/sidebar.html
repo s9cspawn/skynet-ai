@@ -34,6 +34,9 @@
       <span><strong>Settings</strong><small>Prompt & model controls</small></span>
       <span aria-hidden="true">›</span>
     </button>
+    @if (user()) {
+      <div class="account-row"><div class="account-avatar">{{ user()!.name.charAt(0).toUpperCase() }}</div><span><strong>{{ user()!.name }}</strong><small>{{ user()!.email }}</small></span><button type="button" title="Sign out" aria-label="Sign out" (click)="logout.emit()">↪</button></div>
+    }
     <div class="local-note"><span aria-hidden="true">◆</span> Runs on this machine</div>
   </div>
 </aside>
