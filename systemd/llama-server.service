@@ -1,0 +1,18 @@
+[Unit]
+Description=Skynet llama.cpp model server
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=spawn
+Group=spawn
+WorkingDirectory=/home/spawn
+Environment=HOME=/home/spawn
+ExecStart=/home/spawn/ai/llama.cpp/build/bin/llama-server -hf unsloth/gemma-4-12b-it-GGUF:UD-Q4_K_XL --alias gemma4-12b --host 127.0.0.1 --port 8080 -ngl 99 -c 262144 -np 1 --flash-attn on --cache-type-k q8_0 --cache-type-v q8_0 --jinja --reasoning off --no-webui
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=30
+
+[Install]
+WantedBy=multi-user.target

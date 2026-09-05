@@ -1,6 +1,7 @@
 [Unit]
 Description=Skynet Chat API
 After=network.target llama-server.service
+Wants=llama-server.service
 
 [Service]
 Type=simple

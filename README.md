@@ -188,6 +188,25 @@ If systemd is disabled in WSL, run these in separate shells:
 sudo nginx -g 'daemon off;'
 ```
 
+## Start automatically with WSL
+
+The startup script checks llama.cpp first, starts it when needed, waits for the model health endpoint, and then starts the API and Nginx:
+
+```bash
+sudo ./scripts/wsl-startup.sh
+```
+
+Install the included units to run that check automatically whenever the WSL systemd instance boots:
+
+```bash
+sudo install -Dm755 scripts/wsl-startup.sh /opt/local-ai-chat/scripts/wsl-startup.sh
+sudo cp systemd/llama-server.service systemd/skynet-startup.service systemd/local-ai-chat-api.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable llama-server.service skynet-startup.service local-ai-chat-api.service nginx.service
+```
+
+`systemd/llama-server.service` preserves this host's current llama.cpp binary, Hugging Face model, GPU layers, context size, cache types, and prompt-template options. Update that unit if the model or llama.cpp installation path changes.
+
 ## API checks
 
 ```bash
