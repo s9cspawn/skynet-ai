@@ -46,6 +46,15 @@ describe('Skynet API', () => {
     await agent.get('/api/conversations').expect(200);
   });
 
+  it('marks session cookies secure behind the TLS proxy', async () => {
+    const response = await request(app)
+      .post('/api/auth/register')
+      .set('x-forwarded-proto', 'https')
+      .send({ name: 'Secure User', email: `secure-${crypto.randomUUID()}@example.com`, password: 'correct-horse-battery' })
+      .expect(201);
+    expect(response.headers['set-cookie']?.[0]).toContain('Secure');
+  });
+
   it('keeps conversations after signing out and back in', async () => {
     const email = `persist-${crypto.randomUUID()}@example.com`;
     const password = 'correct-horse-battery';

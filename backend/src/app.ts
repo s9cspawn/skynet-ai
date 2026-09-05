@@ -14,6 +14,7 @@ export const createApp = (provider: LlmProvider = new LlamaCppProvider()): expre
   const app = express();
   app.disable('x-powered-by');
   app.disable('etag');
+  app.set('trust proxy', 'loopback');
   app.use(helmet({ contentSecurityPolicy: false }));
   app.use(requestContext);
   app.use('/api', (_request, response, next) => {

@@ -6,7 +6,7 @@ A private Angular chat interface for a local `llama.cpp` model. Nginx is the onl
 Windows browser
       |
       v
-Nginx :80
+Nginx :80 / :8443 TLS
   |       \
   |        +--> Angular static files
   v
@@ -143,6 +143,16 @@ sudo systemctl reload nginx
 
 The Nginx proxy deliberately omits a trailing slash from `proxy_pass`, preserving `/api/chat` and `/api/health` when forwarding to Express. Buffering, request buffering, cache, and gzip are disabled for `/api` so token events reach the browser immediately.
 
+For this host, UniFi keeps public port `8000` and forwards it to Windows port `8443`. Windows forwards `8443` to Nginx in WSL, which terminates TLS for `skynet-2026.duckdns.org`. The public URL is `https://skynet-2026.duckdns.org:8000/`; LAN HTTP remains available on port 80.
+
+The certificate uses Certbot's DuckDNS DNS challenge. Store the DuckDNS token in `/etc/letsencrypt/duckdns.ini` with mode `600`, then install and enable the included renewal units:
+
+```bash
+sudo cp systemd/skynet-certbot-renew.service systemd/skynet-certbot-renew.timer /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable --now skynet-certbot-renew.timer
+```
+
 ## Run the backend as a service
 
 The included unit assumes the repository is deployed to `/opt/local-ai-chat` and runs under a dedicated account:
@@ -219,4 +229,4 @@ scripts/    Build, start, and API verification helpers
 systemd/    API unit and optional llama.cpp example
 ```
 
-Conversation content is stored only in browser `localStorage`. Backend logs contain request IDs, endpoint, status, message count, duration, and upstream failures; prompts and responses are not logged.
+Conversation content and account data are stored in the local SQLite database. Backend logs contain request IDs, endpoint, status, message count, duration, and upstream failures; prompts and responses are not logged.
