@@ -1,0 +1,30 @@
+<article class="message" [class.user]="message().role === 'user'" [class.error]="message().error">
+  <div class="avatar" [attr.aria-label]="message().role === 'user' ? 'You' : 'Local AI'">
+    @if (message().role === 'user') { Y } @else { <span aria-hidden="true">✦</span> }
+  </div>
+  <div class="message-body">
+    <div class="message-meta">
+      <strong>{{ message().role === 'user' ? 'You' : 'Local AI' }}</strong>
+      <time>{{ time() }}</time>
+      @if (message().error) { <span class="error-label">Error</span> }
+    </div>
+    @if (message().role === 'assistant') {
+      <div class="markdown" [innerHTML]="rendered()" (click)="contentClick($event)"></div>
+      @if (generating()) {
+        <span class="cursor" aria-label="Generating"></span>
+      }
+      @if (!generating() && message().content) {
+        <div class="message-actions">
+          <button type="button" (click)="copyMessage()" [attr.aria-label]="copied ? 'Copied response' : 'Copy response'">
+            <span aria-hidden="true">▢</span> {{ copied ? 'Copied' : 'Copy' }}
+          </button>
+          @if (!message().error) {
+            <button type="button" (click)="regenerate.emit(message().id)"><span aria-hidden="true">↻</span> Regenerate</button>
+          }
+        </div>
+      }
+    } @else {
+      <p class="user-copy">{{ message().content }}</p>
+    }
+  </div>
+</article>

@@ -1,0 +1,13 @@
+.composer { display: flex; align-items: flex-end; gap: .6rem; padding: .65rem .65rem .65rem 1rem; background: rgba(19,24,33,.94); border: 1px solid #2c3542; border-radius: 1rem; box-shadow: 0 1rem 4rem rgba(0,0,0,.25), 0 0 0 1px rgba(255,255,255,.015) inset; transition: border-color .18s, box-shadow .18s; }
+.composer:focus-within { border-color: rgba(101,243,200,.38); box-shadow: 0 1rem 4rem rgba(0,0,0,.25), 0 0 0 3px rgba(101,243,200,.045); }
+textarea { flex: 1; resize: none; min-height: 2.5rem; max-height: 11.25rem; border: 0; outline: 0; background: transparent; color: #eef3f9; font: 1rem/1.55 var(--sans); padding: .48rem 0 .25rem; }
+textarea::placeholder { color: #697586; }
+.send-button { width: 2.5rem; height: 2.5rem; border: 0; border-radius: .75rem; background: linear-gradient(135deg, #73f5cf, #4dc7a2); color: #07110e; font: 700 1.25rem var(--sans); cursor: pointer; box-shadow: 0 .4rem 1.3rem rgba(82,222,179,.18); }
+.send-button:hover { filter: brightness(1.06); transform: translateY(-1px); }
+.send-button:disabled { background: #2b333e; color: #697586; box-shadow: none; cursor: default; transform: none; }
+.stop-button { height: 2.5rem; border: 1px solid rgba(255,105,131,.25); border-radius: .7rem; background: rgba(255,91,119,.08); color: #ff9bad; padding: 0 .75rem; cursor: pointer; }
+.stop-button span { display: inline-block; width: .48rem; height: .48rem; background: currentColor; border-radius: 1px; margin-right: .35rem; }
+.composer-meta { display: flex; justify-content: space-between; padding: .5rem .2rem 0; color: #5e6979; font-size: .68rem; }
+.privacy { color: #738091; }
+.privacy span { color: var(--accent); font-size: .48rem; margin-right: .24rem; }
+@media (max-width: 600px) { .composer-meta > span:first-child { display: none; } .composer-meta { justify-content: flex-end; } }

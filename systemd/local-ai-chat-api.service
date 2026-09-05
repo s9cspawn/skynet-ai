@@ -1,0 +1,20 @@
+[Unit]
+Description=Local AI Chat API
+After=network.target llama-server.service
+
+[Service]
+Type=simple
+User=local-ai-chat
+Group=local-ai-chat
+WorkingDirectory=/opt/local-ai-chat/backend
+EnvironmentFile=-/etc/local-ai-chat/api.env
+ExecStart=/usr/bin/node /opt/local-ai-chat/backend/dist/server.js
+Restart=on-failure
+RestartSec=3
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target

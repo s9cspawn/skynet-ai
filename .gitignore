@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.angular/
+.env
+*.log
+.DS_Store
+.tools/
+.tools-npm.tgz
+frontend/.angular/
+frontend/dist/
+backend/dist/
+coverage/

@@ -1,0 +1,58 @@
+:host { display: contents; }
+
+.sidebar {
+  width: 18rem;
+  min-width: 18rem;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  border-right: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(16, 21, 29, .98), rgba(9, 12, 18, .98));
+  position: relative;
+  z-index: 30;
+}
+
+.brand-row { display: flex; align-items: center; gap: .75rem; min-height: 3.25rem; padding: .2rem .35rem 1rem; }
+.brand-row strong { display: block; font-size: 1rem; letter-spacing: -.02em; }
+.brand-row small, .settings-button small { display: block; color: var(--muted); font-size: .75rem; margin-top: .12rem; }
+.brand-mark { width: 2rem; height: 2rem; border-radius: .7rem; display: grid; place-items: center; background: linear-gradient(135deg, #65f3c8, #49a7ff); box-shadow: 0 0 24px rgba(78, 223, 185, .18); }
+.brand-mark span { width: .75rem; height: .75rem; border: 2px solid #07110f; border-radius: 50%; position: relative; }
+.brand-mark span::after { content: ''; position: absolute; width: .35rem; height: 2px; background: #07110f; right: -.35rem; top: 3px; }
+
+button { color: inherit; font: inherit; }
+.new-chat { width: 100%; border: 1px solid rgba(101, 243, 200, .25); border-radius: .8rem; background: rgba(101, 243, 200, .08); padding: .78rem .85rem; display: flex; gap: .55rem; align-items: center; color: #dffcf3; font-weight: 600; cursor: pointer; transition: .18s ease; }
+.new-chat:hover { background: rgba(101, 243, 200, .14); border-color: rgba(101, 243, 200, .42); }
+.new-chat kbd { margin-left: auto; color: var(--muted); background: rgba(255,255,255,.04); border: 1px solid var(--border); border-radius: .35rem; padding: .1rem .35rem; font-size: .7rem; }
+.section-label { padding: 1.25rem .5rem .45rem; color: #758091; font-size: .69rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+.conversation-list { display: flex; flex-direction: column; gap: .2rem; overflow-y: auto; min-height: 0; }
+.conversation-row { display: flex; align-items: center; border: 1px solid transparent; border-radius: .72rem; overflow: hidden; }
+.conversation-row:hover { background: rgba(255,255,255,.035); }
+.conversation-row.active { background: linear-gradient(90deg, rgba(101,243,200,.105), rgba(73,167,255,.045)); border-color: rgba(101,243,200,.14); }
+.conversation { min-width: 0; flex: 1; border: 0; background: transparent; padding: .68rem .6rem; display: flex; align-items: center; gap: .55rem; text-align: left; cursor: pointer; color: #aab3c1; }
+.conversation:hover, .conversation-row.active .conversation { color: #eefcf8; }
+.conversation-icon { font-size: 1.3rem; color: #647182; transform: rotate(25deg); }
+.conversation-row.active .conversation-icon { color: var(--accent); }
+.conversation-copy { min-width: 0; flex: 1; }
+.conversation-copy strong { display: block; font-size: .84rem; font-weight: 540; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.conversation-copy small { color: #687486; font-size: .7rem; display: block; margin-top: .22rem; }
+.delete-button { opacity: 0; width: 1.5rem; height: 1.5rem; margin-right: .35rem; display: grid; place-items: center; border: 0; background: transparent; border-radius: .4rem; color: #8e98a8; cursor: pointer; }
+.conversation-row:hover .delete-button, .delete-button:focus { opacity: 1; }
+.delete-button:hover { background: rgba(255, 91, 119, .12); color: #ff8fa3; }
+
+.sidebar-footer { margin-top: auto; padding-top: .8rem; border-top: 1px solid var(--border); }
+.settings-button { border: 0; background: transparent; width: 100%; color: #aeb7c4; display: grid; grid-template-columns: 1.5rem 1fr auto; align-items: center; text-align: left; gap: .45rem; padding: .7rem .45rem; border-radius: .65rem; cursor: pointer; }
+.settings-button:hover { background: rgba(255,255,255,.035); color: #eef2f7; }
+.settings-button strong { font-size: .83rem; font-weight: 550; }
+.local-note { color: #5d6978; font-size: .69rem; padding: .65rem .55rem .15rem; }
+.local-note span { color: var(--accent); font-size: .55rem; margin-right: .3rem; }
+.mobile-close { display: none; margin-left: auto; }
+.scrim { display: none; }
+
+@media (max-width: 800px) {
+  .sidebar { position: fixed; inset: 0 auto 0 0; transform: translateX(-105%); transition: transform .24s ease; box-shadow: 1.5rem 0 4rem rgba(0,0,0,.4); }
+  .sidebar.open { transform: translateX(0); }
+  .scrim { display: block; position: fixed; inset: 0; z-index: 25; background: rgba(0,0,0,.55); opacity: 0; pointer-events: none; transition: opacity .2s; }
+  .scrim.visible { opacity: 1; pointer-events: auto; }
+  .mobile-close { display: grid; }
+}

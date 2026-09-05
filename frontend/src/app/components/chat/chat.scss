@@ -1,0 +1,19 @@
+:host { display: contents; }
+.chat-scroll { flex: 1; overflow-y: auto; min-height: 0; scroll-behavior: smooth; }
+.chat-column { width: min(48rem, calc(100% - 2rem)); min-height: 100%; margin: 0 auto; display: flex; flex-direction: column; }
+.messages { padding: 1rem 0 3rem; }
+.welcome { margin: auto 0; padding: 4rem 0 5rem; text-align: center; }
+.orb { width: 4.8rem; height: 4.8rem; margin: 0 auto 1.3rem; border-radius: 1.45rem; display: grid; place-items: center; background: radial-gradient(circle at 32% 28%, rgba(127,255,216,.35), transparent 38%), linear-gradient(145deg, #182a2a, #111824); border: 1px solid rgba(101,243,200,.22); box-shadow: 0 0 0 .55rem rgba(101,243,200,.025), 0 0 4rem rgba(64,200,166,.12); transform: rotate(3deg); }
+.orb span { color: var(--accent); font-size: 1.8rem; filter: drop-shadow(0 0 10px rgba(101,243,200,.7)); transform: rotate(-3deg); }
+.eyebrow { color: #728091; font-size: .67rem; font-weight: 700; letter-spacing: .16em; }
+.eyebrow span { display: inline-block; width: .38rem; height: .38rem; border-radius: 50%; background: var(--accent); box-shadow: 0 0 .65rem var(--accent); margin: 0 .45rem .03rem 0; }
+h1 { margin: .7rem 0 .55rem; color: #f4f7fb; font-size: clamp(2rem, 5vw, 2.75rem); line-height: 1.1; letter-spacing: -.045em; font-weight: 620; }
+.welcome > p { color: #8793a3; margin: 0 auto 2rem; max-width: 30rem; line-height: 1.6; }
+.suggestions { display: grid; grid-template-columns: 1fr 1fr; gap: .65rem; max-width: 40rem; margin: 0 auto; text-align: left; }
+.suggestions button { border: 1px solid #242d39; background: rgba(17,22,30,.7); color: #cbd3de; border-radius: .8rem; min-height: 4.4rem; padding: .75rem; display: grid; grid-template-columns: 2rem 1fr auto; align-items: center; gap: .65rem; cursor: pointer; font: inherit; transition: .18s ease; }
+.suggestions button:hover { transform: translateY(-2px); border-color: rgba(101,243,200,.25); background: rgba(20,28,36,.92); }
+.suggestion-icon { width: 2rem; height: 2rem; border-radius: .55rem; display: grid; place-items: center; background: rgba(101,243,200,.07); color: #79e9c8; font: .72rem var(--mono); }
+.suggestions strong { font-size: .82rem; display: block; font-weight: 550; color: #dce3ec; }
+.suggestions small { display: block; color: #657183; font-size: .7rem; margin-top: .25rem; }
+.arrow { color: #536070; }
+@media (max-width: 600px) { .suggestions { grid-template-columns: 1fr; } .welcome { padding-top: 2rem; } .chat-column { width: min(100% - 1.25rem, 48rem); } }

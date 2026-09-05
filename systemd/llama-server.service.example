@@ -1,0 +1,19 @@
+[Unit]
+Description=llama.cpp local inference server
+After=network.target
+
+[Service]
+Type=simple
+User=llama
+Group=llama
+EnvironmentFile=/etc/local-ai-chat/llama.env
+ExecStart=/opt/llama.cpp/build/bin/llama-server -m ${LLAMA_MODEL_PATH} --host 127.0.0.1 --port 8080 -ngl ${LLAMA_GPU_LAYERS}
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+
+[Install]
+WantedBy=multi-user.target

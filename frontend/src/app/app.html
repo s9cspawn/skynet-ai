@@ -1,0 +1,21 @@
+<div class="app-shell">
+  <app-sidebar [conversations]="conversations.conversations()" [activeId]="conversations.activeId()" [open]="sidebarOpen()"
+    (newChat)="newConversation()" (selectChat)="selectConversation($event)" (deleteChat)="deleteConversation($event)"
+    (openSettings)="settingsOpen.set(true)" (closeSidebar)="sidebarOpen.set(false)" />
+  <main>
+    <header class="topbar">
+      <button class="menu-button" type="button" aria-label="Open conversations" (click)="sidebarOpen.set(true)">☰</button>
+      <div class="conversation-heading"><strong>{{ conversations.activeConversation()?.title ?? 'New conversation' }}</strong><span>{{ conversations.activeConversation()?.messages?.length ?? 0 }} messages</span></div>
+      <div class="topbar-actions">
+        @if (localInference()) { <div class="privacy-badge" title="Messages are processed by the AI model running on this machine.">⌾ Local inference</div> }
+        <div class="model-status" [class.online]="online()" [class.checking]="health.checking()">
+          <span class="status-dot"></span><span><strong>{{ online() ? modelName() : 'Model offline' }}</strong><small>{{ online() ? 'Ready' : (health.checking() ? 'Checking…' : 'Unavailable') }}</small></span>
+        </div>
+        <button class="clear-button" type="button" [disabled]="!(conversations.activeConversation()?.messages?.length)" (click)="clearConversation()">Clear</button>
+      </div>
+    </header>
+    <app-chat [messages]="conversations.activeConversation()?.messages ?? []" [generating]="generating()" (suggest)="send($event)" (regenerate)="regenerate($event)" />
+    <div class="composer-wrap"><app-prompt-input [generating]="generating()" [online]="online()" [localInference]="localInference()" (send)="send($event)" (stop)="stop()" /></div>
+  </main>
+</div>
+@if (settingsOpen()) { <app-settings [settings]="settings.settings()" (save)="saveSettings($event)" (reset)="resetSettings()" (close)="settingsOpen.set(false)" /> }

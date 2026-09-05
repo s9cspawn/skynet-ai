@@ -1,0 +1,27 @@
+<section #scrollArea class="chat-scroll" aria-label="Conversation">
+  <div class="chat-column">
+    @if (messages().length === 0) {
+      <div class="welcome">
+        <div class="orb" aria-hidden="true"><span>✦</span></div>
+        <div class="eyebrow"><span></span> PRIVATE AI ON THIS MACHINE</div>
+        <h1>How can I help?</h1>
+        <p>Your messages stay on this machine and are processed by your local model.</p>
+        <div class="suggestions">
+          @for (item of suggestions; track item.title) {
+            <button type="button" (click)="suggest.emit(item.prompt)">
+              <span class="suggestion-icon" aria-hidden="true">{{ item.icon }}</span>
+              <span><strong>{{ item.title }}</strong><small>Start a new prompt</small></span>
+              <span class="arrow" aria-hidden="true">↗</span>
+            </button>
+          }
+        </div>
+      </div>
+    } @else {
+      <div class="messages">
+        @for (message of messages(); track message.id; let last = $last) {
+          <app-message [message]="message" [generating]="last && generating() && message.role === 'assistant'" (regenerate)="regenerate.emit($event)" />
+        }
+      </div>
+    }
+  </div>
+</section>

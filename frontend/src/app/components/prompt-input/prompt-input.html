@@ -1,0 +1,12 @@
+<div class="composer" [class.generating]="generating()">
+  <textarea #textarea [formControl]="prompt" rows="1" maxlength="100000" aria-label="Message Local AI" placeholder="Ask anything…" (keydown)="keydown($event)" (input)="resize()"></textarea>
+  @if (generating()) {
+    <button class="stop-button" type="button" aria-label="Stop generation" (click)="stop.emit()"><span></span> Stop</button>
+  } @else {
+    <button class="send-button" type="button" aria-label="Send message" [disabled]="!prompt.value.trim()" (click)="submit()">↑</button>
+  }
+</div>
+<div class="composer-meta">
+  <span>Enter to send · Shift+Enter for new line</span>
+  <span class="privacy"><span aria-hidden="true">◆</span> {{ online() ? (localInference() ? 'Local inference' : 'Configured inference') : 'Waiting for local model' }}</span>
+</div>
