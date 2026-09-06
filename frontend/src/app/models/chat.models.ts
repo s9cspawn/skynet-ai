@@ -1,11 +1,24 @@
 export type ChatRole = 'system' | 'user' | 'assistant';
 
+export interface ChatAttachment {
+  name: string;
+  type: string;
+  size: number;
+  textContent?: string;
+}
+
+export interface ChatDraft {
+  content: string;
+  attachments: ChatAttachment[];
+}
+
 export interface ChatMessage {
   id: string;
   role: ChatRole;
   content: string;
   createdAt: Date;
   error?: boolean;
+  attachments?: ChatAttachment[];
 }
 
 export interface Conversation {

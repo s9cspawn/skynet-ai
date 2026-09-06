@@ -4,7 +4,7 @@ import { PromptInput } from './components/prompt-input/prompt-input';
 import { SettingsComponent } from './components/settings/settings';
 import { Sidebar } from './components/sidebar/sidebar';
 import { AuthComponent, type AuthSubmission } from './components/auth/auth';
-import type { ChatMessage, ChatSettings } from './models/chat.models';
+import type { ChatDraft, ChatMessage, ChatSettings } from './models/chat.models';
 import { ChatService, ChatStreamError } from './services/chat.service';
 import { ConversationService } from './services/conversation.service';
 import { HealthService } from './services/health.service';
@@ -42,9 +42,10 @@ export class App implements OnInit, OnDestroy {
   deleteConversation(id: string): void { if (this.conversations.activeId() === id) this.stop(); this.conversations.delete(id); }
   clearConversation(): void { this.stop(); this.conversations.clearActive(); }
 
-  async send(content: string): Promise<void> {
+  async send(draft: ChatDraft | string): Promise<void> {
     if (this.generating()) return;
-    this.conversations.addMessage({ role: 'user', content });
+    const message = typeof draft === 'string' ? { content: draft, attachments: [] } : draft;
+    this.conversations.addMessage({ role: 'user', content: message.content || 'Please review the attached file(s).', attachments: message.attachments });
     await this.generate();
   }
 

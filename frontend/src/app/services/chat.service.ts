@@ -22,7 +22,7 @@ export class ChatService {
       body: JSON.stringify({
         messages: [
           { role: 'system', content: settings.systemPrompt },
-          ...messages.filter((message) => !message.error).map(({ role, content }) => ({ role, content })),
+          ...messages.filter((message) => !message.error).map(({ role, content, attachments }) => ({ role, content: this.promptContent(content, attachments) })),
         ],
         temperature: settings.temperature,
         topP: settings.topP,
@@ -50,6 +50,15 @@ export class ChatService {
       if (done) break;
     }
     if (buffer.trim()) this.processEvent(buffer, onChunk);
+  }
+
+  private promptContent(content: string, attachments?: ChatMessage['attachments']): string {
+    if (!attachments?.length) return content;
+    const details = attachments.map((attachment) => {
+      if (attachment.textContent) return `\n\nAttached text file "${attachment.name}":\n${attachment.textContent.slice(0, 100_000)}`;
+      return `\n\nAttached file "${attachment.name}" (${attachment.type}; contents not extracted by the browser).`;
+    }).join('');
+    return `${content || 'Please review the attached file(s).'}${details}`;
   }
 
   private processEvent(event: string, onChunk: (text: string) => void): void {

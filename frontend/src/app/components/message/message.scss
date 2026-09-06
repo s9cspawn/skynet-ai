@@ -7,6 +7,10 @@
 .message-meta time { color: #667282; font-size: .7rem; }
 .error-label { color: #ff91a4; font-size: .68rem; border: 1px solid rgba(255,91,119,.3); background: rgba(255,91,119,.08); border-radius: 99px; padding: .08rem .38rem; }
 .user-copy { white-space: pre-wrap; margin: .2rem 0 0; color: #cfd6e1; line-height: 1.65; }
+.message-attachments { display: flex; flex-wrap: wrap; gap: .5rem; margin: .35rem 0 .45rem; }
+.message-attachment { display: flex; align-items: center; gap: .4rem; padding: .35rem .5rem; border: 1px solid #303b49; border-radius: .55rem; background: rgba(255,255,255,.025); color: #b9c4d1; font-size: .75rem; }
+.message-attachment img { width: 3rem; height: 3rem; object-fit: cover; border-radius: .35rem; }
+.file-icon { color: var(--accent); font-size: 1rem; }
 .error .markdown { color: #ffb2bf; }
 .cursor { display: inline-block; width: .48rem; height: 1rem; margin-left: .15rem; vertical-align: -.15rem; background: var(--accent); border-radius: 2px; animation: blink .8s infinite; }
 .message-actions { display: flex; gap: .25rem; margin-top: .6rem; opacity: .72; }

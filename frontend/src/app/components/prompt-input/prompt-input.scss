@@ -1,4 +1,8 @@
 .composer { display: flex; align-items: flex-end; gap: .6rem; padding: .65rem .65rem .65rem 1rem; background: rgba(19,24,33,.94); border: 1px solid #2c3542; border-radius: 1rem; box-shadow: 0 1rem 4rem rgba(0,0,0,.25), 0 0 0 1px rgba(255,255,255,.015) inset; transition: border-color .18s, box-shadow .18s; }
+.file-input { display: none; }
+.attach-button { width: 2.5rem; height: 2.5rem; flex: 0 0 auto; border: 1px solid #34404e; border-radius: .75rem; background: #1b232e; color: #aab6c5; font-size: 1.35rem; cursor: pointer; }
+.attach-button:hover:not(:disabled) { color: var(--accent); border-color: rgba(101,243,200,.4); }
+.attach-button:disabled { opacity: .5; cursor: default; }
 .composer:focus-within { border-color: rgba(101,243,200,.38); box-shadow: 0 1rem 4rem rgba(0,0,0,.25), 0 0 0 3px rgba(101,243,200,.045); }
 textarea { flex: 1; resize: none; min-height: 2.5rem; max-height: 11.25rem; border: 0; outline: 0; background: transparent; color: #eef3f9; font: 1rem/1.55 var(--sans); padding: .48rem 0 .25rem; }
 textarea::placeholder { color: #697586; }
@@ -8,6 +12,11 @@ textarea::placeholder { color: #697586; }
 .stop-button { height: 2.5rem; border: 1px solid rgba(255,105,131,.25); border-radius: .7rem; background: rgba(255,91,119,.08); color: #ff9bad; padding: 0 .75rem; cursor: pointer; }
 .stop-button span { display: inline-block; width: .48rem; height: .48rem; background: currentColor; border-radius: 1px; margin-right: .35rem; }
 .composer-meta { display: flex; justify-content: space-between; padding: .5rem .2rem 0; color: #5e6979; font-size: .68rem; }
+.attachment-list { display: flex; flex-wrap: wrap; gap: .45rem; padding: .55rem .25rem 0; }
+.attachment-chip { display: flex; align-items: center; gap: .4rem; max-width: 15rem; padding: .3rem .4rem; border: 1px solid #303b49; border-radius: .55rem; background: #151c26; color: #b9c4d1; font-size: .72rem; }
+.attachment-chip img { width: 1.8rem; height: 1.8rem; object-fit: cover; border-radius: .35rem; }
+.attachment-chip span:not(.file-icon) { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.attachment-chip button { border: 0; background: transparent; color: #7c8999; cursor: pointer; font-size: 1rem; line-height: 1; }
 .privacy { color: #738091; }
 .privacy span { color: var(--accent); font-size: .48rem; margin-right: .24rem; }
 @media (max-width: 600px) { .composer-meta > span:first-child { display: none; } .composer-meta { justify-content: flex-end; } }

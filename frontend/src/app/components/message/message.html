@@ -24,6 +24,16 @@
         </div>
       }
     } @else {
+      @if (message().attachments?.length) {
+        <div class="message-attachments">
+          @for (attachment of message().attachments; track attachment.name + attachment.size) {
+            <div class="message-attachment">
+              <span class="file-icon" aria-hidden="true">▧</span>
+              <span>{{ attachment.name }}</span>
+            </div>
+          }
+        </div>
+      }
       <p class="user-copy">{{ message().content }}</p>
     }
   </div>
