@@ -6,6 +6,8 @@ if [[ ${EUID} -ne 0 ]]; then
 fi
 
 readonly MODEL_HEALTH_URL='http://127.0.0.1:8080/health'
+readonly MODEL_LIST_URL='http://127.0.0.1:8080/v1/models'
+readonly EXPECTED_MODEL='huihui-gemma4-q8'
 readonly API_HEALTH_URL='http://127.0.0.1:3000/api/health'
 readonly WAIT_SECONDS=600
 
@@ -32,6 +34,15 @@ if ! curl --fail --silent --max-time 3 "$MODEL_HEALTH_URL" >/dev/null; then
   journalctl -u llama-server.service -n 50 --no-pager
   exit 1
 fi
+
+if ! curl --fail --silent --max-time 3 "$MODEL_LIST_URL" | grep -Eq '"id"[[:space:]]*:[[:space:]]*"'"$EXPECTED_MODEL"'"'; then
+  log "llama.cpp is healthy but did not expose the expected model ($EXPECTED_MODEL)."
+  curl --silent --max-time 3 "$MODEL_LIST_URL" || true
+  log 'Recent service output follows:'
+  journalctl -u llama-server.service -n 50 --no-pager
+  exit 1
+fi
+log "Loaded model: $EXPECTED_MODEL."
 
 # During boot, systemd starts these units after this readiness check. A manual
 # run starts them here as well.

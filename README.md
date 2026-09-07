@@ -37,7 +37,7 @@ Nginx :80 / :8443 TLS
 - Node.js 20.19 or newer and npm
 - Nginx
 - A recent llama.cpp build
-- A Gemma GGUF model that your llama.cpp build supports
+- The Huihui Gemma 4 Q8_0 model used by the managed llama.cpp service
 
 Angular CLI is installed as a project dependency. A global Angular CLI installation is optional.
 
@@ -62,7 +62,7 @@ The application does not download or manage model files. Start the server with y
   -ngl 99
 ```
 
-Recent llama.cpp builds may also load a compatible Hugging Face repository with `-hf owner/repository[:quant]`. Check the options supported by your installed binary with `llama-server --help`; local GGUF loading remains the predictable production choice.
+Recent llama.cpp builds may also load a compatible Hugging Face repository with `-hf owner/repository[:quant]`. The managed service uses `huihui-ai/Huihui-gemma-4-12B-agentic-fable5-abliterated-GGUF:Q8_0` with alias `huihui-gemma4-q8`, a 131,072-token context, and q4_0 KV cache. Check the options supported by your installed binary with `llama-server --help`.
 
 Verify the running model before starting the application:
 
@@ -81,7 +81,7 @@ The defaults are:
 
 ```dotenv
 LLAMA_BASE_URL=http://127.0.0.1:8080
-LLAMA_MODEL=gemma4-12b
+LLAMA_MODEL=huihui-gemma4-q8
 MODEL_DISPLAY_NAME=Skynet-12B
 API_HOST=127.0.0.1
 API_PORT=3000
@@ -205,7 +205,7 @@ sudo systemctl daemon-reload
 sudo systemctl enable llama-server.service skynet-startup.service local-ai-chat-api.service nginx.service
 ```
 
-`systemd/llama-server.service` preserves this host's current llama.cpp binary, Hugging Face model, GPU layers, context size, cache types, and prompt-template options. Update that unit if the model or llama.cpp installation path changes.
+`systemd/llama-server.service` preserves this host's current llama.cpp binary, Huihui Hugging Face model, GPU layers, context size, cache types, and prompt-template options. The startup check verifies that `/v1/models` exposes `huihui-gemma4-q8` before the API and Nginx are started.
 
 ## API checks
 
