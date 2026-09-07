@@ -4,9 +4,14 @@ import { z } from 'zod';
 import { logRequest } from '../logger.js';
 import type { LlmProvider } from '../services/llm-provider.js';
 
+const contentPartSchema = z.discriminatedUnion('type', [
+  z.object({ type: z.literal('text'), text: z.string().max(200_000) }),
+  z.object({ type: z.literal('image_url'), image_url: z.object({ url: z.string().max(6_000_000) }) }),
+]);
+
 const messageSchema = z.object({
   role: z.enum(['system', 'user', 'assistant']),
-  content: z.string().trim().min(1).max(100_000),
+  content: z.union([z.string().trim().min(1).max(200_000), z.array(contentPartSchema).min(1).max(12)]),
 });
 
 const chatSchema = z.object({

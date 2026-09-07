@@ -9,7 +9,7 @@ User=spawn
 Group=spawn
 WorkingDirectory=/home/spawn
 Environment=HOME=/home/spawn
-ExecStart=/home/spawn/ai/llama.cpp/build/bin/llama-server -hf huihui-ai/Huihui-gemma-4-12B-agentic-fable5-abliterated-GGUF:Q8_0 --alias huihui-gemma4-q8 --host 127.0.0.1 --port 8080 -ngl 99 -c 131072 -np 1 --flash-attn on --cache-type-k q4_0 --cache-type-v q4_0 --jinja --reasoning off --no-webui
+ExecStart=/home/spawn/ai/llama.cpp/build/bin/llama-server -hf huihui-ai/Huihui-gemma-4-12B-agentic-fable5-abliterated-GGUF:Q8_0 --mmproj /home/spawn/ai/models/mmproj-huihui-gemma4-q8.gguf --alias huihui-gemma4-q8 --host 127.0.0.1 --port 8080 -ngl 99 -c 131072 -np 1 --flash-attn on --cache-type-k q4_0 --cache-type-v q4_0 --jinja --reasoning off --no-webui
 Restart=on-failure
 RestartSec=5
 TimeoutStopSec=30

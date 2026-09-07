@@ -15,6 +15,7 @@ textarea::placeholder { color: #697586; }
 .attachment-list { display: flex; flex-wrap: wrap; gap: .45rem; padding: .55rem .25rem 0; }
 .attachment-chip { display: flex; align-items: center; gap: .4rem; max-width: 15rem; padding: .3rem .4rem; border: 1px solid #303b49; border-radius: .55rem; background: #151c26; color: #b9c4d1; font-size: .72rem; }
 .attachment-chip img { width: 1.8rem; height: 1.8rem; object-fit: cover; border-radius: .35rem; }
+.attachment-chip img { width: 1.8rem; height: 1.8rem; object-fit: cover; border-radius: .35rem; }
 .attachment-chip span:not(.file-icon) { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .attachment-chip button { border: 0; background: transparent; color: #7c8999; cursor: pointer; font-size: 1rem; line-height: 1; }
 .privacy { color: #738091; }

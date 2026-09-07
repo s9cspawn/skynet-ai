@@ -21,9 +21,10 @@ export class PromptInput {
     const input = event.target as HTMLInputElement;
     const files = Array.from(input.files ?? []);
     for (const file of files) {
-      if (file.size > 5 * 1024 * 1024 || this.attachments().reduce((total, item) => total + item.size, 0) + file.size > 15 * 1024 * 1024) continue;
+      if (file.size > 4 * 1024 * 1024 || this.attachments().reduce((total, item) => total + item.size, 0) + file.size > 12 * 1024 * 1024) continue;
       const attachment: ChatAttachment = { name: file.name, type: file.type || 'application/octet-stream', size: file.size };
-      if (file.type.startsWith('text/') || /\.(md|json|csv|ts|js|html|css|xml|yaml|yml|log)$/i.test(file.name)) attachment.textContent = await file.text();
+      if (file.type.startsWith('image/')) attachment.dataUrl = await this.readAsDataUrl(file);
+      else if (file.type.startsWith('text/') || /\.(md|json|csv|ts|js|html|css|xml|yaml|yml|log)$/i.test(file.name)) attachment.textContent = (await file.text()).slice(0, 100_000);
       this.attachments.update(items => [...items, attachment]);
     }
     input.value = '';
@@ -49,5 +50,9 @@ export class PromptInput {
     if (!element) return;
     element.style.height = 'auto';
     element.style.height = `${Math.min(element.scrollHeight, 180)}px`;
+  }
+
+  private readAsDataUrl(file: File): Promise<string> {
+    return new Promise((resolve, reject) => { const reader = new FileReader(); reader.onload = () => resolve(String(reader.result)); reader.onerror = () => reject(reader.error); reader.readAsDataURL(file); });
   }
 }

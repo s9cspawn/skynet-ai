@@ -4,7 +4,7 @@ import { database } from '../database/database.js';
 import { requireAuth } from '../middleware/auth.js';
 import type { AuthUser } from '../services/auth.service.js';
 
-const attachment = z.object({ name: z.string().min(1).max(255), type: z.string().max(150), size: z.number().int().nonnegative().max(5_242_880), textContent: z.string().max(100_000).optional() });
+const attachment = z.object({ name: z.string().min(1).max(255), type: z.string().max(150), size: z.number().int().nonnegative().max(4_194_304), dataUrl: z.string().max(6_000_000).optional(), textContent: z.string().max(100_000).optional() });
 const message = z.object({ id: z.string().min(1).max(100), role: z.enum(['system','user','assistant']), content: z.string().max(200_000), createdAt: z.string().datetime(), error: z.boolean().optional(), attachments: z.array(attachment).max(10).optional() });
 const conversation = z.object({ id: z.string().min(1).max(100), title: z.string().min(1).max(200), messages: z.array(message).max(500), createdAt: z.string().datetime(), updatedAt: z.string().datetime() });
 const settings = z.object({ systemPrompt: z.string().min(1).max(100_000), temperature: z.number().min(0).max(2), topP: z.number().min(0).max(1), maxTokens: z.number().int().min(1).max(131_072) });

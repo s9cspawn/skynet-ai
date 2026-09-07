@@ -1,8 +1,13 @@
 export type ChatRole = 'system' | 'user' | 'assistant';
 
+export type ProviderContent = string | Array<
+  { type: 'text'; text: string } |
+  { type: 'image_url'; image_url: { url: string } }
+>;
+
 export interface ProviderMessage {
   role: ChatRole;
-  content: string;
+  content: ProviderContent;
 }
 
 export interface ChatRequest {

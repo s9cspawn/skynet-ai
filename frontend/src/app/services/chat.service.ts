@@ -52,13 +52,18 @@ export class ChatService {
     if (buffer.trim()) this.processEvent(buffer, onChunk);
   }
 
-  private promptContent(content: string, attachments?: ChatMessage['attachments']): string {
+  private promptContent(content: string, attachments?: ChatMessage['attachments']): string | Array<{ type: 'text'; text: string } | { type: 'image_url'; image_url: { url: string } }> {
     if (!attachments?.length) return content;
     const details = attachments.map((attachment) => {
       if (attachment.textContent) return `\n\nAttached text file "${attachment.name}":\n${attachment.textContent.slice(0, 100_000)}`;
+      if (attachment.dataUrl) return '';
       return `\n\nAttached file "${attachment.name}" (${attachment.type}; contents not extracted by the browser).`;
     }).join('');
-    return `${content || 'Please review the attached file(s).'}${details}`;
+    const parts: Array<{ type: 'text'; text: string } | { type: 'image_url'; image_url: { url: string } }> = attachments
+      .filter((attachment) => attachment.dataUrl)
+      .map((attachment) => ({ type: 'image_url' as const, image_url: { url: attachment.dataUrl! } }));
+    parts.push({ type: 'text', text: `${content || 'Please review the attached file(s).'}${details}` });
+    return parts;
   }
 
   private processEvent(event: string, onChunk: (text: string) => void): void {

@@ -86,13 +86,15 @@ MODEL_DISPLAY_NAME=Skynet-12B
 API_HOST=127.0.0.1
 API_PORT=3000
 LLAMA_TIMEOUT_MS=600000
-MAX_REQUEST_BYTES=2097152
+MAX_REQUEST_BYTES=33554432
 SESSION_DAYS=30
 ```
 
 Development creates SQLite at `backend/data/skynet.db`. The systemd service stores production data at `/var/lib/skynet/skynet.db`, where its `StateDirectory` grants the API write access.
 
 `LLAMA_MODEL` is a fallback. When llama.cpp exposes `/v1/models`, the health response reports its actual model identifier. Keep `LLAMA_BASE_URL` in server configuration; the browser cannot supply an upstream URL.
+
+The production Gemma 4 12B deployment also loads a matching multimodal projector with `--mmproj`. Keep the projector generated from the same Gemma 4 base checkpoint as the language model; the projector is required for image input.
 
 ## Development
 

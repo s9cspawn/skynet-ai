@@ -1,18 +1,18 @@
 <div class="composer" [class.generating]="generating()">
-  <input #fileInput class="file-input" type="file" multiple accept=".txt,.md,.json,.csv,.ts,.js,.html,.css,.xml,.yaml,.yml,.log,.pdf,.doc,.docx" (change)="filesSelected($event)">
-  <button class="attach-button" type="button" aria-label="Attach files" title="Attach files" [disabled]="generating()" (click)="fileInput.click()">＋</button>
+  <input #fileInput class="file-input" type="file" multiple accept="image/*,.txt,.md,.json,.csv,.ts,.js,.html,.css,.xml,.yaml,.yml,.log,.pdf,.doc,.docx" (change)="filesSelected($event)">
+  <button class="attach-button" type="button" aria-label="Attach files or images" title="Attach files or images" [disabled]="generating()" (click)="fileInput.click()">＋</button>
   <textarea #textarea [formControl]="prompt" rows="1" maxlength="100000" aria-label="Message Skynet" placeholder="Ask anything…" (keydown)="keydown($event)" (input)="resize()"></textarea>
   @if (generating()) {
     <button class="stop-button" type="button" aria-label="Stop generation" (click)="stop.emit()"><span></span> Stop</button>
   } @else {
-    <button class="send-button" type="button" aria-label="Send message" [disabled]="!prompt.value.trim()" (click)="submit()">↑</button>
+    <button class="send-button" type="button" aria-label="Send message" [disabled]="!prompt.value.trim() && !attachments().length" (click)="submit()">↑</button>
   }
 </div>
 @if (attachments().length) {
   <div class="attachment-list" aria-label="Attached files">
     @for (attachment of attachments(); track $index; let index = $index) {
       <div class="attachment-chip">
-        <span class="file-icon" aria-hidden="true">▧</span>
+        @if (attachment.dataUrl) { <img [src]="attachment.dataUrl" [alt]="attachment.name"> } @else { <span class="file-icon" aria-hidden="true">▧</span> }
         <span>{{ attachment.name }}</span><button type="button" [attr.aria-label]="'Remove ' + attachment.name" (click)="removeAttachment(index)">×</button>
       </div>
     }

@@ -28,7 +28,7 @@
         <div class="message-attachments">
           @for (attachment of message().attachments; track attachment.name + attachment.size) {
             <div class="message-attachment">
-              <span class="file-icon" aria-hidden="true">▧</span>
+              @if (attachment.dataUrl) { <img [src]="attachment.dataUrl" [alt]="attachment.name"> } @else { <span class="file-icon" aria-hidden="true">▧</span> }
               <span>{{ attachment.name }}</span>
             </div>
           }
