@@ -16,13 +16,18 @@ export class ChatService {
     signal: AbortSignal,
     onChunk: (text: string) => void,
   ): Promise<void> {
+    const conversation = messages.filter((message) => !message.error);
+    const latestImageMessage = [...conversation].reverse().find((message) => message.attachments?.some((attachment) => attachment.dataUrl));
     const response = await fetch('/api/chat', {
       method: 'POST',
       headers: { 'content-type': 'application/json', accept: 'text/event-stream' },
       body: JSON.stringify({
         messages: [
           { role: 'system', content: settings.systemPrompt },
-          ...messages.filter((message) => !message.error).map(({ role, content, attachments }) => ({ role, content: this.promptContent(content, attachments) })),
+          ...conversation.map(({ id, role, content, attachments }) => ({
+            role,
+            content: this.promptContent(content, attachments, id === latestImageMessage?.id),
+          })),
         ],
         temperature: settings.temperature,
         topP: settings.topP,
@@ -52,17 +57,23 @@ export class ChatService {
     if (buffer.trim()) this.processEvent(buffer, onChunk);
   }
 
-  private promptContent(content: string, attachments?: ChatMessage['attachments']): string | Array<{ type: 'text'; text: string } | { type: 'image_url'; image_url: { url: string } }> {
+  private promptContent(
+    content: string,
+    attachments?: ChatMessage['attachments'],
+    includeLatestImage = false,
+  ): string | Array<{ type: 'text'; text: string } | { type: 'image_url'; image_url: { url: string } }> {
     if (!attachments?.length) return content;
+    const latestImage = includeLatestImage ? [...attachments].reverse().find((attachment) => attachment.dataUrl) : undefined;
     const details = attachments.map((attachment) => {
       if (attachment.textContent) return `\n\nAttached text file "${attachment.name}":\n${attachment.textContent.slice(0, 100_000)}`;
-      if (attachment.dataUrl) return '';
+      if (attachment.dataUrl && attachment === latestImage) return '';
+      if (attachment.dataUrl) return `\n\nAttached image "${attachment.name}" (not resent as visual context).`;
       return `\n\nAttached file "${attachment.name}" (${attachment.type}; contents not extracted by the browser).`;
     }).join('');
-    const parts: Array<{ type: 'text'; text: string } | { type: 'image_url'; image_url: { url: string } }> = attachments
-      .filter((attachment) => attachment.dataUrl)
-      .map((attachment) => ({ type: 'image_url' as const, image_url: { url: attachment.dataUrl! } }));
-    parts.push({ type: 'text', text: `${content || 'Please review the attached file(s).'}${details}` });
+    const parts: Array<{ type: 'text'; text: string } | { type: 'image_url'; image_url: { url: string } }> = [
+      { type: 'text', text: `${content || 'Please review the attached file(s).'}${details}` },
+    ];
+    if (latestImage) parts.push({ type: 'image_url', image_url: { url: latestImage.dataUrl! } });
     return parts;
   }
 
