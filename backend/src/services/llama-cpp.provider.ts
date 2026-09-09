@@ -17,7 +17,7 @@ export class LlamaCppProvider implements LlmProvider {
 
     return fetch(`${config.llamaBaseUrl}/v1/chat/completions`, {
       method: 'POST',
-      headers: { 'content-type': 'application/json', accept: 'text/event-stream' },
+      headers: this.headers('text/event-stream', true),
       body: JSON.stringify({
         model: this.resolvedModel,
         messages: request.messages,
@@ -41,9 +41,9 @@ export class LlamaCppProvider implements LlmProvider {
   }
 
   private async checkHealthEndpoint(signal: AbortSignal): Promise<boolean> {
-    for (const path of ['/health', '/v1/health']) {
+    for (const path of ['/health', '/v1/health', '/api/health']) {
       try {
-        const response = await fetch(`${config.llamaBaseUrl}${path}`, { signal });
+        const response = await fetch(`${config.llamaBaseUrl}${path}`, { headers: this.headers(), signal });
         if (response.ok) return true;
       } catch {
         // Some llama.cpp builds expose only one of these endpoints.
@@ -54,12 +54,20 @@ export class LlamaCppProvider implements LlmProvider {
 
   private async discoverModel(signal: AbortSignal): Promise<string> {
     try {
-      const response = await fetch(`${config.llamaBaseUrl}/v1/models`, { signal });
+      const response = await fetch(`${config.llamaBaseUrl}/v1/models`, { headers: this.headers(), signal });
       if (!response.ok) return config.llamaModel;
       const body = (await response.json()) as ModelListResponse;
       return body.data?.[0]?.id ?? body.models?.[0]?.model ?? body.models?.[0]?.name ?? config.llamaModel;
     } catch {
       return config.llamaModel;
     }
+  }
+
+  private headers(accept = 'application/json', includeContentType = false): Record<string, string> {
+    return {
+      accept,
+      ...(includeContentType ? { 'content-type': 'application/json' } : {}),
+      ...(config.llamaApiKey ? { authorization: `Bearer ${config.llamaApiKey}` } : {}),
+    };
   }
 }

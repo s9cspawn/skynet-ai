@@ -5,41 +5,44 @@ if [[ ${EUID} -ne 0 ]]; then
   exec sudo "$0" "$@"
 fi
 
-readonly MODEL_HEALTH_URL='http://127.0.0.1:8080/health'
-readonly MODEL_LIST_URL='http://127.0.0.1:8080/v1/models'
-readonly EXPECTED_MODEL='huihui-gemma4-q8'
+if [[ -f /etc/local-ai-chat/api.env ]]; then
+  set -a
+  # shellcheck disable=SC1091
+  source /etc/local-ai-chat/api.env
+  set +a
+fi
+
+readonly LLAMA_BASE_URL="${LLAMA_BASE_URL:?LLAMA_BASE_URL must be set in /etc/local-ai-chat/api.env}"
+readonly EXPECTED_MODEL="${LLAMA_MODEL:?LLAMA_MODEL must be set in /etc/local-ai-chat/api.env}"
+readonly MODEL_HEALTH_URL="${LLAMA_BASE_URL%/}/api/health"
+readonly MODEL_LIST_URL="${LLAMA_BASE_URL%/}/v1/models"
 readonly API_HEALTH_URL='http://127.0.0.1:3000/api/health'
 readonly WAIT_SECONDS=600
 
-log() { printf '[skynet] %s\n' "$*"; }
-
-if curl --fail --silent --max-time 3 "$MODEL_HEALTH_URL" >/dev/null; then
-  log 'llama.cpp is already healthy.'
-else
-  log 'Starting llama.cpp...'
-  systemctl start llama-server.service
+curl_auth=()
+if [[ -n "${LLAMA_API_KEY:-}" ]]; then
+  curl_auth=(-H "Authorization: Bearer ${LLAMA_API_KEY}")
 fi
 
-log 'Waiting for the model to become ready...'
+log() { printf '[skynet] %s\n' "$*"; }
+
+log 'Waiting for Unsloth Studio to become ready...'
 for ((elapsed = 0; elapsed < WAIT_SECONDS; elapsed += 2)); do
-  if curl --fail --silent --max-time 3 "$MODEL_HEALTH_URL" >/dev/null; then
+  if curl --fail --silent --max-time 3 "${curl_auth[@]}" "$MODEL_HEALTH_URL" >/dev/null; then
     log "Model ready after ${elapsed}s."
     break
   fi
   sleep 2
 done
 
-if ! curl --fail --silent --max-time 3 "$MODEL_HEALTH_URL" >/dev/null; then
-  log 'Model did not become ready. Recent service output follows:'
-  journalctl -u llama-server.service -n 50 --no-pager
+if ! curl --fail --silent --max-time 3 "${curl_auth[@]}" "$MODEL_HEALTH_URL" >/dev/null; then
+  log 'Unsloth Studio did not become ready. Start the Unsloth model on Windows, then rerun this check.'
   exit 1
 fi
 
-if ! curl --fail --silent --max-time 3 "$MODEL_LIST_URL" | grep -Eq '"id"[[:space:]]*:[[:space:]]*"'"$EXPECTED_MODEL"'"'; then
-  log "llama.cpp is healthy but did not expose the expected model ($EXPECTED_MODEL)."
-  curl --silent --max-time 3 "$MODEL_LIST_URL" || true
-  log 'Recent service output follows:'
-  journalctl -u llama-server.service -n 50 --no-pager
+if ! curl --fail --silent --max-time 3 "${curl_auth[@]}" "$MODEL_LIST_URL" | grep -Fq '"id":"'"$EXPECTED_MODEL"'"'; then
+  log "Unsloth Studio is healthy but did not expose the expected model ($EXPECTED_MODEL)."
+  curl --silent --max-time 3 "${curl_auth[@]}" "$MODEL_LIST_URL" || true
   exit 1
 fi
 log "Loaded model: $EXPECTED_MODEL."

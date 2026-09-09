@@ -1,11 +1,12 @@
 [Unit]
 Description=Verify Skynet model readiness before starting the web application
-Wants=network-online.target llama-server.service
-After=network-online.target llama-server.service
+Wants=network-online.target
+After=network-online.target
 Before=local-ai-chat-api.service nginx.service
 
 [Service]
 Type=oneshot
+EnvironmentFile=-/etc/local-ai-chat/api.env
 ExecStart=/opt/local-ai-chat/scripts/wsl-startup.sh --systemd
 RemainAfterExit=yes
 TimeoutStartSec=700
