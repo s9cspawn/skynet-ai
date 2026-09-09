@@ -222,6 +222,22 @@ sudo systemctl enable skynet-startup.service local-ai-chat-api.service nginx.ser
 
 Unsloth Studio owns the model process. The startup check reads `/etc/local-ai-chat/api.env` and verifies that its `/v1/models` response matches `LLAMA_MODEL` before the API and Nginx are started.
 
+### Keep WSL running on Windows
+
+WSL can stop its VM after the last interactive process exits, which also stops the Skynet services. Add a long idle timeout under `[wsl2]` in `%UserProfile%\.wslconfig`:
+
+```ini
+vmIdleTimeout=2147483647
+```
+
+Then copy the included silent launcher into the current user's Startup folder. It runs the same readiness script at sign-in and keeps WSL alive after Skynet is ready:
+
+```powershell
+Copy-Item scripts/windows-startup.vbs "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\Skynet WSL Startup.vbs"
+```
+
+Run `wsl --shutdown` once after changing `.wslconfig`, then sign out and back in or run the launcher manually.
+
 ## API checks
 
 ```bash
